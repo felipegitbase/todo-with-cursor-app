@@ -10,9 +10,17 @@ export default function ToDoList() {
   // 🔁 Leer tareas de Firebase al cargar el componente
   useEffect(() => {
     async function fetchTasks() {
-      const querySnapshot = await getDocs(collection(db, "tasks"));
-      const fetchedTasks = querySnapshot.docs.map((doc) => doc.data().task);
-      setTasks(fetchedTasks);
+      try {
+        console.log("Attempting to fetch tasks from Firebase...");
+        const querySnapshot = await getDocs(collection(db, "tasks"));
+        const fetchedTasks = querySnapshot.docs.map((doc) => doc.data().task);
+        setTasks(fetchedTasks);
+        console.log("Successfully fetched tasks:", fetchedTasks);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        console.error("Error code:", error.code);
+        console.error("Error message:", error.message);
+      }
     }
     fetchTasks();
   }, []);
@@ -21,13 +29,18 @@ export default function ToDoList() {
   const addTask = async () => {
     if (input.trim() !== "") {
       try {
+        console.log("Attempting to add task to Firebase...");
         await addDoc(collection(db, "tasks"), {
           task: input.trim(),
         });
         setTasks([...tasks, input.trim()]);
         setInput("");
+        console.log("Successfully added task:", input.trim());
       } catch (error) {
         console.error("Error al añadir tarea:", error);
+        console.error("Error code:", error.code);
+        console.error("Error message:", error.message);
+        alert(`Error adding task: ${error.message}`);
       }
     }
   };
